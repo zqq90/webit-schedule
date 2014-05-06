@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <groupId>com.github.zqq90.webit</groupId>
+    <artifactId>webit-schedule</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Webit Schedule</name>
+    
+    <description>Task schedule, cron like, all writen in Java.</description>
+    
+    <url>https://zqq90.github.com/webit-schedule</url>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.source.version>1.6</java.source.version>
+        <java.target.version>1.6</java.target.version>
+    </properties>
+    
+    <scm>
+        <url>https://zqq90.github.com/webit-schedule</url>
+        <connection>scm:git:https://github.com/zqq90/webit-schedule.git</connection>
+        <developerConnection>scm:git:git@github.com:zqq90/webit-schedule.git</developerConnection>
+    </scm>
+    <organization>
+        <name>Webit</name>
+        <url>https://github.com/zqq90</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>The New BSD License</name>
+            <url>https://github.com/zqq90/webit-schedule/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>zqq</id>
+            <name>Zhu Qingqing</name>
+            <email>zqq_90@163.com</email>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/zqq90/webit-schedule/issues</url>
+    </issueManagement>
+    <dependencies>
+        <!-- test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
