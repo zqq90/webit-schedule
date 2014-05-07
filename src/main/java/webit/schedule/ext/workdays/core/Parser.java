@@ -13,14 +13,21 @@ import java.util.Arrays;
 public class Parser {
 
     private final static int INIT_BUFFER_SIZE = 64;
+    //state s
+    private final static int STATE_INIT = 1; //init
+    private final static int STATE_MONTH_START = 2; //after month declare
+    private final static int STATE_WEEK_HEAD = 3; //after week head declare
+    private final static int STATE_DATES = 4; //stated date block
+    private final static int STATE_MESSAGE = 5; //stated message
 
     private final int[] currentWeekdayIndexer = new int[7];
     private final boolean[] monthFlag = new boolean[13];
-    private YearEntry currentYearEntry;
-    private int state = STATE_INIT;
-    private int lineNumber;
     private int currentMonth;
+    private int lineNumber;
     private int currentDay;
+    private int state;
+
+    private YearEntry currentYearEntry;
 
     public Parser() {
         reset();
@@ -76,12 +83,6 @@ public class Parser {
         return entry;
     }
 
-    private final static int STATE_INIT = 1; //init
-    private final static int STATE_MONTH_START = 2; //after month declare
-    private final static int STATE_WEEK_HEAD = 3; //after week head declare
-    private final static int STATE_DATES = 4; //stated date block
-    private final static int STATE_MESSAGE = 5; //stated message
-
     public void parseLine(final Segment segment) {
         final int start = segment.getNextPos();
         final int currentState = state;
@@ -98,7 +99,7 @@ public class Parser {
                     throw createException("Unexpect state to declare month");
                 }
                 parseMonth(segment);
-                return;
+                break;
             case '/': //month declare
                 if (currentState != STATE_DATES
                         && currentState != STATE_MESSAGE) {
@@ -108,7 +109,7 @@ public class Parser {
                     throw createException("Unexpect message start, please start message with '//'", segment);
                 }
                 parseMessage(segment);
-                return;
+                break;
             default:
                 if (currentState == STATE_MONTH_START) {
                     segment.resetPos(start);

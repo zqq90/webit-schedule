@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import webit.schedule.util.TimeUtil;
 
@@ -40,12 +41,8 @@ public class WorkdayConfigGenerator {
 
     static {
         int len = WEEK_HEAD.length;
-        WEEK_DAYS_TMPL = new char[len];
-        int lastIndex = len - 1;
-        for (int i = 0; i < lastIndex; i++) {
-            WEEK_DAYS_TMPL[i] = BLANK;
-        }
-        WEEK_DAYS_TMPL[lastIndex] = NEW_LINE;
+        Arrays.fill(WEEK_DAYS_TMPL = new char[len], BLANK);
+        WEEK_DAYS_TMPL[len - 1] = NEW_LINE;
     }
 
     /**
