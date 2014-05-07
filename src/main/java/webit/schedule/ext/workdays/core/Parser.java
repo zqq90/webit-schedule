@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.util.Arrays;
 
 /**
+ * Calendar parser.
  *
  * @author Zqq
  */
@@ -29,6 +30,9 @@ public class Parser {
 
     private YearEntry currentYearEntry;
 
+    /**
+     * Create a Parser.
+     */
     public Parser() {
         reset();
     }
@@ -43,7 +47,7 @@ public class Parser {
     }
 
     /**
-     * parse. Note: will not close reader
+     * Parse from reader.
      *
      * @param year
      * @param reader
@@ -83,7 +87,12 @@ public class Parser {
         return entry;
     }
 
-    public void parseLine(final Segment segment) {
+    /**
+     * parse one line.
+     *
+     * @param segment
+     */
+    protected void parseLine(final Segment segment) {
         final int start = segment.getNextPos();
         final int currentState = state;
         segment.skipBlanks();
@@ -113,7 +122,7 @@ public class Parser {
             default:
                 if (currentState == STATE_MONTH_START) {
                     segment.resetPos(start);
-                    parseWeekHead(segment);
+                    parseWeekTitle(segment);
                 } else if (currentState == STATE_WEEK_HEAD
                         || currentState == STATE_DATES) {
                     segment.resetPos(start);
@@ -124,6 +133,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Check if finished all month.
+     */
     private void checkFinishedAllMonths() {
         if (state != STATE_MESSAGE
                 && state != STATE_DATES) {
@@ -137,6 +149,9 @@ public class Parser {
         }
     }
 
+    /**
+     * Check if finished current month.
+     */
     private void checkFinishedCurrentMonth() {
         if (state != STATE_DATES) {
             return;
@@ -150,8 +165,7 @@ public class Parser {
     }
 
     /**
-     *
-     * like: 5}
+     * Parse month. like: 5}
      */
     private void parseMonth(final Segment segment) {
         checkFinishedCurrentMonth();
@@ -199,10 +213,9 @@ public class Parser {
     }
 
     /**
-     *
-     * like: Mon Tue Wed Thu Fri Sat Sun
+     * Parse indexer from week title. like: Mon Tue Wed Thu Fri Sat Sun
      */
-    private void parseWeekHead(final Segment segment) {
+    private void parseWeekTitle(final Segment segment) {
         final int[] weekdayIndexer = this.currentWeekdayIndexer;
         for (int i = 0; i < 7; i++) {
             segment.skipBlanks();
@@ -214,8 +227,7 @@ public class Parser {
     }
 
     /**
-     *
-     * like: 1 [2] [3]
+     * Parse days of one week. like: 1 [2] [3]
      */
     private void parseDates(final Segment segment) {
         final YearEntry yearEntry = this.currentYearEntry;
@@ -319,8 +331,7 @@ public class Parser {
     }
 
     /**
-     *
-     * like: 1-2,3-5,5,6,7 weekend
+     * Parse Messages. like: 1-2,3-5,5,6,7 weekend
      */
     private void parseMessage(Segment segment) {
         checkFinishedCurrentMonth();

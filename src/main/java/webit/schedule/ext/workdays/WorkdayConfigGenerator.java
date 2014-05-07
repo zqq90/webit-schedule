@@ -12,6 +12,7 @@ import java.util.Date;
 import webit.schedule.util.TimeUtil;
 
 /**
+ * Generate a default calendar to a file or <code>Writer</code>.
  *
  * @author Zqq
  */
@@ -19,8 +20,8 @@ public class WorkdayConfigGenerator {
 
     private final static char BLANK = ' ';
     private final static char NEW_LINE = '\n';
-    private final static char[] WEEK_HEAD = ("Mon  Tue  Wed  Thu  Fri  Sat  Sun  " + NEW_LINE).toCharArray();
-    private final static int[] INSERT_POINTS = {0, 5, 10, 15, 20, 25, 30}; //0-6 : index = weekday-1
+    private final static char[] WEEK_TITLE = ("Mon  Tue  Wed  Thu  Fri  Sat  Sun  " + NEW_LINE).toCharArray();
+    private final static int[] INSERT_POINTS = {0, 5, 10, 15, 20, 25, 30}; //0-6 : i = weekday - 1
     private final static char[] WEEK_DAYS_TMPL;
 
     private final static String[] MONTH_NAME = {
@@ -40,12 +41,13 @@ public class WorkdayConfigGenerator {
     };
 
     static {
-        int len = WEEK_HEAD.length;
+        int len = WEEK_TITLE.length;
         Arrays.fill(WEEK_DAYS_TMPL = new char[len], BLANK);
         WEEK_DAYS_TMPL[len - 1] = NEW_LINE;
     }
 
     /**
+     * Render to <code>Writer</code>.
      *
      * @param year
      * @param writer
@@ -56,6 +58,7 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * Render to file with file path.
      *
      * @param year
      * @param filepath
@@ -66,6 +69,7 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * Render to <code>File</code>.
      *
      * @param year
      * @param file
@@ -84,15 +88,26 @@ public class WorkdayConfigGenerator {
         }
     }
 
-    private final int year;
     private Writer writer;
+    private final int year;
     private final char[] weekDaysBuffer;
 
+    /**
+     * Create with year.
+     *
+     * @param year
+     */
     public WorkdayConfigGenerator(int year) {
         this.year = year;
         weekDaysBuffer = new char[WEEK_DAYS_TMPL.length];
     }
 
+    /**
+     * Render to <code>Writer</code>.
+     *
+     * @param writer
+     * @throws IOException
+     */
     public void renderTo(Writer writer) throws IOException {
         this.writer = writer;
         writeFileHeader();
@@ -100,10 +115,18 @@ public class WorkdayConfigGenerator {
         writeFileFooter();
     }
 
+    /**
+     * Reset <code>this.weekDaysBuffer</code>.
+     */
     protected void resetWeekDaysBuffer() {
         System.arraycopy(WEEK_DAYS_TMPL, 0, weekDaysBuffer, 0, weekDaysBuffer.length);
     }
 
+    /**
+     * Write file header.
+     *
+     * @throws IOException
+     */
     protected void writeFileHeader() throws IOException {
         writer.append(NEW_LINE)
                 .append("###################################").append(NEW_LINE)
@@ -113,35 +136,47 @@ public class WorkdayConfigGenerator {
                 .append("###################################").append(NEW_LINE);
     }
 
+    /**
+     * Write file footer.
+     *
+     * @throws IOException
+     */
     protected void writeFileFooter() throws IOException {
-        writer.append(NEW_LINE);
+        this.writer.append(NEW_LINE);
     }
 
+    /**
+     * Write months。
+     *
+     * @throws IOException
+     */
     protected void writeMonths() throws IOException {
         for (int i = 1; i < 13; i++) {
-            writer.append(NEW_LINE);
             writeMonth(i);
         }
     }
 
     /**
+     * Write month.
      *
      * @param month
      * @throws IOException
      */
     protected void writeMonth(int month) throws IOException {
         writeMonthHeader(month);
-        writeWeekHeader();
+        writeMonthDeclear(month);
+        writeWeekTitle();
         writeMonthDays(month);
         writeMonthFooter(month);
     }
 
     /**
+     * Write month declaration.
      *
      * @param month
      * @throws IOException
      */
-    protected void writeMonthHeader(int month) throws IOException {
+    protected void writeMonthDeclear(int month) throws IOException {
         final Writer myWriter = writer;
         myWriter.append('{');
         if (month < 10) {
@@ -157,6 +192,17 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * Write month footer.
+     *
+     * @param month
+     * @throws IOException
+     */
+    protected void writeMonthHeader(int month) throws IOException {
+        this.writer.append(NEW_LINE);
+    }
+
+    /**
+     * Write month footer.
      *
      * @param month
      * @throws IOException
@@ -166,28 +212,31 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * Write month title.
      *
      * @throws IOException
      */
-    protected void writeWeekHeader() throws IOException {
-        writer.write(WEEK_HEAD);
+    protected void writeWeekTitle() throws IOException {
+        this.writer.write(WEEK_TITLE);
     }
 
     /**
+     * Write dates of this month
      *
      * @param month
      * @throws IOException
      */
     protected void writeMonthDays(int month) throws IOException {
-        final char[] buffer = weekDaysBuffer;
         final Writer myWriter = this.writer;
+        final char[] buffer = weekDaysBuffer;
+        final int[] insertPoint = INSERT_POINTS;
         final int startWeekday = TimeUtil.dayOfWeek(year, month, 1);
         final int dayMax = TimeUtil.getMonthLength(year, month);
         resetWeekDaysBuffer();
         for (int day = 1; day <= dayMax; day++) {
             int index = (day + startWeekday - 2) % 7; // == weekday - 1
             appendMonthDay(buffer, day,
-                    INSERT_POINTS[index],
+                    insertPoint[index],
                     isFreeday(month, day, index + 1));
             if (index == 6
                     || day == dayMax) { // sunday or last day of month
@@ -200,6 +249,7 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * if is a free day, opposite to workday.
      *
      * @param month
      * @param day
@@ -212,6 +262,7 @@ public class WorkdayConfigGenerator {
     }
 
     /**
+     * Append one day to buffer.
      *
      * @param buffer
      * @param day
