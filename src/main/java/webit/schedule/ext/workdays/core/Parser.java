@@ -37,7 +37,7 @@ public class Parser {
         reset();
     }
 
-    protected void reset() {
+    private void reset() {
         state = STATE_INIT;
         lineNumber = 0;
         currentMonth = 0;
