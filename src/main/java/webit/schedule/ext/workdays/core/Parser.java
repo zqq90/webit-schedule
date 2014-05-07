@@ -4,6 +4,7 @@ package webit.schedule.ext.workdays.core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 
 /**
  *
@@ -13,29 +14,25 @@ public class Parser {
 
     private final static int INIT_BUFFER_SIZE = 64;
 
-    private YearEntry yearEntry;
+    private final int[] currentWeekdayIndexer = new int[7];
+    private final boolean[] monthFlag = new boolean[13];
+    private YearEntry currentYearEntry;
     private int state = STATE_INIT;
     private int lineNumber;
     private int currentMonth;
     private int currentDay;
-    private int[] currentWeekdayIndexer;
-    private boolean[] monthFlag = new boolean[13];
 
     public Parser() {
         reset();
     }
 
-    void reset() {
+    protected void reset() {
         state = STATE_INIT;
         lineNumber = 0;
         currentMonth = 0;
         currentDay = 0;
-        yearEntry = null;
-        currentWeekdayIndexer = null;
-        final boolean[] flag = this.monthFlag;
-        for (int i = 1; i < 13; i++) {
-            flag[i] = false;
-        }
+        currentYearEntry = null;
+        Arrays.fill(this.monthFlag, false);
     }
 
     /**
@@ -47,7 +44,7 @@ public class Parser {
      * @throws IOException
      */
     public YearEntry parse(int year, Reader reader) throws IOException {
-        final YearEntry entry = yearEntry = new YearEntry(year);
+        final YearEntry entry = currentYearEntry = new YearEntry(year);
         try {
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line;
@@ -116,12 +113,10 @@ public class Parser {
                 if (currentState == STATE_MONTH_START) {
                     segment.resetPos(start);
                     parseWeekHead(segment);
-                    return;
                 } else if (currentState == STATE_WEEK_HEAD
                         || currentState == STATE_DATES) {
                     segment.resetPos(start);
                     parseDates(segment);
-                    return;
                 } else {
                     throw createException("Unexpect line start", segment);
                 }
@@ -129,8 +124,8 @@ public class Parser {
     }
 
     private void checkFinishedAllMonths() {
-        if (state != STATE_DATES
-                && state != STATE_MESSAGE) {
+        if (state != STATE_MESSAGE
+                && state != STATE_DATES) {
             throw createException("Wrong file end");
         }
         final boolean[] flag = this.monthFlag;
@@ -147,7 +142,7 @@ public class Parser {
         }
         int month = currentMonth;
         if (month > 0) {
-            if (yearEntry.getMonthLength(month) > currentDay) {
+            if (currentYearEntry.getMonthLength(month) > currentDay) {
                 throw createException("Not finish month: " + month);
             }
         }
@@ -162,58 +157,43 @@ public class Parser {
         segment.skipBlanks();
         final int mouth;
         final char c = segment.next();
-        switch (c) {
-            case '1':
-                char next = segment.next();
-                switch (next) {
-//                    case '\t':
-//                        throw createException("Not support tab char", segment);
-                    case ' ':
-                        mouth = 1;
-                        segment.checkCharWithBlanks('}');
-                        break;
-                    case '0':
-                    case '1':
-                    case '2':
-                        mouth = 10 + next - '0';
-                        segment.checkCharWithBlanks('}');
-                        break;
-                    case '}':
-                        mouth = 1;
-                        segment.checkBlanks();
-                        break;
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
+        if (c == '1') {
+            char next = segment.next();
+            switch (next) {
+//                case '\t':
+//                    throw createException("Not support tab char", segment);
+                case ' ':
+                    mouth = 1;
+                    segment.checkCharWithBlanks('}');
+                    break;
+                case '}':
+                    mouth = 1;
+                    segment.checkBlanks();
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                    mouth = 10 + next - '0';
+                    segment.checkCharWithBlanks('}');
+                    break;
+                default:
+                    if (next >= '3' && next <= '9') {
                         throw createException("Unexpect mouth " + (10 + next - '0'), segment);
-                    default:
-                        throw createUnexpectCharException(next, segment);
-                }
-                break;
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                mouth = c - '0';
-                segment.checkCharWithBlanks('}');
-                break;
-            default:
-                throw createException("Wrong month, need a number", segment);
+                    }
+                    throw createUnexpectCharException(next, segment);
+            }
+        } else if (c >= '2' && c <= '9') {
+            mouth = c - '0';
+            segment.checkCharWithBlanks('}');
+        } else {
+            throw createException("Wrong month, need a number", segment);
         }
         if (this.monthFlag[mouth]) {
             throw createException("Month has bean decleared " + mouth);
         }
         this.monthFlag[mouth] = true;
         this.currentMonth = mouth;
-        currentDay = 0;
+        this.currentDay = 0;
         this.state = STATE_MONTH_START;
     }
 
@@ -222,14 +202,13 @@ public class Parser {
      * like: Mon Tue Wed Thu Fri Sat Sun
      */
     private void parseWeekHead(final Segment segment) {
-        final int[] weekdayIndexer = new int[7];
+        final int[] weekdayIndexer = this.currentWeekdayIndexer;
         for (int i = 0; i < 7; i++) {
             segment.skipBlanks();
             weekdayIndexer[i] = segment.getNextPos();
             segment.skipNotBlanks();
         }
         segment.checkBlanks();
-        this.currentWeekdayIndexer = weekdayIndexer;
         this.state = STATE_WEEK_HEAD;
     }
 
@@ -238,12 +217,13 @@ public class Parser {
      * like: 1 [2] [3]
      */
     private void parseDates(final Segment segment) {
+        final YearEntry yearEntry = this.currentYearEntry;
         final int[] weekdayIndexer = this.currentWeekdayIndexer;
         final int month = this.currentMonth;
-        final int startWeekday;
-        final int dayMax = yearEntry.getMonthLength(month);
-        final int endWeekday;
         final int lastDay = this.currentDay;
+        final int dayMax = yearEntry.getMonthLength(month);
+        final int startWeekday;
+        final int endWeekday;
         if (lastDay == 0) {
             //first week
             startWeekday = yearEntry.dayOfWeek(month, 1);
@@ -322,7 +302,7 @@ public class Parser {
                 if (isFreeDayClosed == false) {
                     throw createException("Not support set half free day now", segment);
                 }
-                System.out.println("FreeDay: " + month + "-" + currDay);
+                //System.out.println("FreeDay: " + month + "-" + currDay);
             } else {
                 yearEntry.setWorkday(month, currDay);
             }
