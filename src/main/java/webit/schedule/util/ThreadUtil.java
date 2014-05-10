@@ -15,7 +15,7 @@ public class ThreadUtil {
     }
 
     public static void tillDies(Thread thread) {
-        if (thread == null) {
+        if (thread != null) {
             boolean dead = false;
             do {
                 try {
