@@ -15,6 +15,7 @@ public class ArrayAtom implements Atom {
         this.array = array;
     }
 
+    @Override
     public boolean match(int value) {
         final int len;
         final int[] myArray;

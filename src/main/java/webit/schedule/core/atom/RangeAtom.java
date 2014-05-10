@@ -19,10 +19,12 @@ public class RangeAtom implements Atom, AtomProto {
         this.max = max;
     }
 
+    @Override
     public boolean match(int value) {
         return value >= min && value <= max;
     }
 
+    @Override
     public int maxNumber(int min, int max) {
         if (min < this.min) {
             min = this.min;
@@ -33,6 +35,7 @@ public class RangeAtom implements Atom, AtomProto {
         return max - min + 1;
     }
 
+    @Override
     public void render(IntArrayList list, int min, int max) {
         if (min < this.min) {
             min = this.min;

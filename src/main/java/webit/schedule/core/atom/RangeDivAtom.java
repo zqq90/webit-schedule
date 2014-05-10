@@ -21,6 +21,7 @@ public class RangeDivAtom implements Atom, AtomProto {
         this.div = div;
     }
 
+    @Override
     public boolean match(final int value) {
         final int temp;
         return value <= max
@@ -28,6 +29,7 @@ public class RangeDivAtom implements Atom, AtomProto {
                 && (temp % div) == 0;
     }
 
+    @Override
     public int maxNumber(int min, int max) {
         if (min < this.min) {
             min = this.min;
@@ -38,6 +40,7 @@ public class RangeDivAtom implements Atom, AtomProto {
         return (max - min) / div + 1;
     }
 
+    @Override
     public void render(final IntArrayList list, int min, int max) {
         if (min < this.min) {
             min = this.min;

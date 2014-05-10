@@ -15,6 +15,7 @@ public class OrAtomGroup implements Atom {
         this.atoms = atoms;
     }
 
+    @Override
     public boolean match(int value) {
         for (int i = 0; i < atoms.length; i++) {
             if (atoms[i].match(value)) {

@@ -32,10 +32,18 @@ import webit.schedule.util.IntArrayList;
  */
 public class CronParser {
 
+    private final static char[] EMPTY_CHAR_ARRAY = new char[0];
+
+    /**
+     * Parse cron string.
+     *
+     * @param cron
+     * @return Matcher
+     * @throws InvalidCronException
+     */
     public static Matcher parse(String cron) throws InvalidCronException {
         return new CronParser(cron).parse();
     }
-    private final static char[] EMPTY_CHAR_ARRAY = new char[0];
 
     private final char[] buffer;
 
@@ -47,6 +55,12 @@ public class CronParser {
         this.buffer = cron != null ? cron.toCharArray() : EMPTY_CHAR_ARRAY;
     }
 
+    /**
+     * Parse cron string.
+     *
+     * @return
+     * @throws InvalidCronException
+     */
     public Matcher parse() throws InvalidCronException {
         final int buff_len = buffer.length;
         final List<Matcher> matchers = new ArrayList<Matcher>();
@@ -157,7 +171,7 @@ public class CronParser {
     }
 
     private Matcher wrapToSingleAndMatcher(final List<Matcher> matchers) {
-        //XXX: 根据复杂度优化排序
+        //XXX: sort by performance
         switch (matchers.size()) {
             case 0:
                 return null;

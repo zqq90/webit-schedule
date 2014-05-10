@@ -15,6 +15,7 @@ public final class OrMatcherGroup implements Matcher{
         this.matchers = matchers;
     }
 
+    @Override
     public boolean match(final Time time) {
         for (Matcher matcher : matchers) {
             if (matcher.match(time)) {

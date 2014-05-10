@@ -11,6 +11,7 @@ public interface Matcher {
 
     public final static Matcher MATCH_ALL = new Matcher() {
 
+        @Override
         public boolean match(Time time) {
             return true;
         }

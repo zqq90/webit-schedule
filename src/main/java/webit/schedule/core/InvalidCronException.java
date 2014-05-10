@@ -2,6 +2,7 @@
 package webit.schedule.core;
 
 /**
+ * Invalid cron exception.
  *
  * @author zqq90
  */

@@ -17,14 +17,17 @@ public class ValueAtom implements Atom, AtomProto {
         this.value = value;
     }
 
+    @Override
     public boolean match(int value) {
         return this.value == value;
     }
 
+    @Override
     public int maxNumber(int min, int max) {
         return 1;
     }
 
+    @Override
     public void render(IntArrayList list, int min, int max) {
         if (this.value >= min && this.value <= max) {
             list.addIfAbsent(this.value);

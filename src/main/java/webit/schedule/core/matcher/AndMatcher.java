@@ -18,6 +18,7 @@ public class AndMatcher implements Matcher {
         this.right = right;
     }
 
+    @Override
     public boolean match(final Time time) {
         return left.match(time) && right.match(time);
     }

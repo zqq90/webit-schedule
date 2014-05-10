@@ -17,6 +17,7 @@ public class OrAtom implements Atom {
         this.right = right;
     }
 
+    @Override
     public boolean match(int value) {
         return left.match(value) || right.match(value);
     }

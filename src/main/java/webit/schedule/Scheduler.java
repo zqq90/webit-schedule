@@ -18,6 +18,7 @@ public final class Scheduler {
 
     private final static int ONE_MINUTE = 60 * 1000;
     private final static int TTL = ONE_MINUTE;
+    
     //settings
     private boolean daemon = false;
     private boolean enableNotifyThread = false;
@@ -47,10 +48,9 @@ public final class Scheduler {
         this.enableNotifyThread = enableNotifyThread;
     }
 
-    //
     private boolean started = false;
     private volatile boolean initialized;
-    //
+
     private NotifyThread notifyThread;
     private TimerThread timerThread;
     private final ArrayList<TaskExecutorEntry> executorEntrys;
@@ -193,7 +193,6 @@ public final class Scheduler {
 
     private void click(final long millis) {
         if (this.enableNotifyThread) {
-
             final NotifyThread myNotifyThread;
             //XXX: if ((myNotifyThread = this.notifyThread) != null) ??
             this.notifyThread = myNotifyThread
@@ -246,7 +245,6 @@ public final class Scheduler {
             this.scheduler.notifyAllExecutor(this.millis);
         }
     }
-    //
 
     private final static class TimerThread extends Thread {
 
@@ -286,7 +284,6 @@ public final class Scheduler {
             }
         }
     }
-    //
 
     private final static class TaskExecutorEntry {
 

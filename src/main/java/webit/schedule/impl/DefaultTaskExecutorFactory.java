@@ -15,6 +15,7 @@ public class DefaultTaskExecutorFactory implements TaskExecutorFactory {
 
     private Scheduler scheduler;
 
+    @Override
     public TaskExecutor createTaskExecutor(Task task) {
         return task instanceof MatchableTask
                 ? new DefaultMatchableTaskExecutor((MatchableTask) task, scheduler)

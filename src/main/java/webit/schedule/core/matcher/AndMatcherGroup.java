@@ -16,6 +16,7 @@ public final class AndMatcherGroup implements Matcher {
         this.matchers = matchers;
     }
 
+    @Override
     public boolean match(final Time time) {
         for (Matcher matcher : matchers) {
             if (!matcher.match(time)) {

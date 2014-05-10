@@ -5,6 +5,6 @@ package webit.schedule.ext.workdays;
  *
  * @author Zqq
  */
-public class Loader {
-    
+public interface Loader {
+    //TODO:
 }

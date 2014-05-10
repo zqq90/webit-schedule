@@ -19,6 +19,7 @@ public class OrThreeValueAtom implements Atom {
         this.three = three;
     }
 
+    @Override
     public boolean match(int value) {
         return value == one || value == two || value == three;
     }

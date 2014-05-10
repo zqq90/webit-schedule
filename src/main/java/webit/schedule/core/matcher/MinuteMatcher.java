@@ -17,6 +17,7 @@ public final class MinuteMatcher implements Matcher {
         this.atom = atom;
     }
 
+    @Override
     public boolean match(Time time) {
         return atom.match(time.minute);
     }
