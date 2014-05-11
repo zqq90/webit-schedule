@@ -19,10 +19,12 @@ public class SchedulerTest {
 
         scheduler.addTask("*", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
                 println(" *", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "*";
             }
@@ -30,10 +32,12 @@ public class SchedulerTest {
 
         scheduler.addTask("*/2", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
                 println(" */2", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "*";
             }
@@ -41,10 +45,12 @@ public class SchedulerTest {
 
         scheduler.addTask("*/3", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
                 println(" */3", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "*";
             }
@@ -52,10 +58,12 @@ public class SchedulerTest {
 
         scheduler.addTask("40,41,42,43,44", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
                 println(" 40,41,42,43,44", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "*";
             }
@@ -88,6 +96,7 @@ public class SchedulerTest {
 
         scheduler.addTask("*", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
 
                 println(" start", context.getTime());
@@ -95,6 +104,7 @@ public class SchedulerTest {
                 println(" end", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "*";
             }
@@ -110,12 +120,14 @@ public class SchedulerTest {
 
         scheduler.addTask("*", new Task() {
 
+            @Override
             public void execute(TaskContext context) {
 
                 println(" click", context.getTime());
                 throw new RuntimeException("exception");
             }
 
+            @Override
             public String getTaskName() {
                 return "exception";
             }
@@ -131,15 +143,18 @@ public class SchedulerTest {
 
         scheduler.addTask("*", new MatchableTask() {
 
+            @Override
             public void execute(TaskContext context) {
 
                 println(" click", context.getTime());
             }
 
+            @Override
             public String getTaskName() {
                 return "exception";
             }
 
+            @Override
             public boolean match(Time time) {
                 boolean result = (time.minute + 1) % 3 == 0;
                 println(result ? "run:" : "skip", time);

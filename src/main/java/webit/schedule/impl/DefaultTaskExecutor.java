@@ -43,6 +43,7 @@ public class DefaultTaskExecutor implements TaskExecutor {
         }
     }
 
+    @Override
     public void runIfNot(Time time) {
         this.time = time;
         this.requestedStop = false;
@@ -67,6 +68,7 @@ public class DefaultTaskExecutor implements TaskExecutor {
         }
     }
 
+    @Override
     public void stopAndWait() {
         synchronized (lockThis) {
             if (this.requestedStop == false) {
@@ -79,11 +81,13 @@ public class DefaultTaskExecutor implements TaskExecutor {
         }
     }
 
+    @Override
     public void askforStop() {
         this.requestedStop = true;
         goonIfPaused();
     }
 
+    @Override
     public void goonIfPaused() {
         if (this.requestedPause) {
             synchronized (lockThis) {
@@ -95,6 +99,7 @@ public class DefaultTaskExecutor implements TaskExecutor {
         }
     }
 
+    @Override
     public void askforPause() {
         this.requestedPause = true;
     }
@@ -116,14 +121,17 @@ public class DefaultTaskExecutor implements TaskExecutor {
         return this.requestedStop || this.requestedPause;
     }
 
+    @Override
     public Task getTask() {
         return task;
     }
 
+    @Override
     public Scheduler getScheduler() {
         return scheduler;
     }
 
+    @Override
     public TaskExecutorStatus getStatus() {
         if (requestedStop) {
             return running ? TaskExecutorStatus.STOPPING : TaskExecutorStatus.STOPPED;
@@ -142,26 +150,32 @@ public class DefaultTaskExecutor implements TaskExecutor {
             this.taskExecutor = taskExecutor;
         }
 
+        @Override
         public void pauseIfRequested() {
             this.taskExecutor.pauseIfRequested();
         }
 
+        @Override
         public boolean isRequestedStop() {
             return this.taskExecutor.requestedStop;
         }
 
+        @Override
         public Scheduler getScheduler() {
             return this.taskExecutor.scheduler;
         }
 
+        @Override
         public Time getTime() {
             return this.taskExecutor.time;
         }
 
+        @Override
         public boolean isRequestedPause() {
             return this.taskExecutor.requestedPause;
         }
 
+        @Override
         public boolean isRequestedStopOrPause() {
             return this.taskExecutor.isRequestedStopOrPause();
         }
