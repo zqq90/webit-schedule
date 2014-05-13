@@ -1,10 +1,10 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule;
 
-import webit.schedule.core.Matcher;
-import webit.schedule.core.CronParser;
 import org.junit.Assert;
 import org.junit.Test;
+import webit.schedule.core.CronParser;
+import webit.schedule.core.Matcher;
 import webit.schedule.core.matcher.MinuteMatcher;
 
 /**

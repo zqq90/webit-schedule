@@ -1,8 +1,8 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule.core.matcher;
 
-import webit.schedule.core.Matcher;
 import webit.schedule.Time;
+import webit.schedule.core.Matcher;
 
 /**
  *

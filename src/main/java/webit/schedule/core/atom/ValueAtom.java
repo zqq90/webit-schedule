@@ -1,8 +1,8 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule.core.atom;
 
-import webit.schedule.core.AtomProto;
 import webit.schedule.core.Atom;
+import webit.schedule.core.AtomProto;
 import webit.schedule.util.IntArrayList;
 
 /**
