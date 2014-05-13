@@ -39,7 +39,7 @@ public class SchedulerTest {
 
             @Override
             public String getTaskName() {
-                return "*";
+                return "*/2";
             }
         });
 
@@ -52,7 +52,7 @@ public class SchedulerTest {
 
             @Override
             public String getTaskName() {
-                return "*";
+                return "*/3";
             }
         });
 
@@ -65,7 +65,7 @@ public class SchedulerTest {
 
             @Override
             public String getTaskName() {
-                return "*";
+                return "list";
             }
         });
 
