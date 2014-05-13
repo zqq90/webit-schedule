@@ -68,7 +68,7 @@ public class CronParser {
         int next;
         Matcher matcher;
         while (start < buff_len) {
-            next = nextChar('|', start, buff_len);
+            next = nextIndexOf('|', start, buff_len);
             matcher = parseSingleMatcher(start, next);
             if (matcher != null
                     && matcher != Matcher.MATCH_ALL) {
@@ -119,7 +119,7 @@ public class CronParser {
         int step = 0;
 
         while (true) {
-            next = nextChar(' ', start, to);
+            next = nextIndexOf(' ', start, to);
             final List<AtomProto> atomProtos = parseAtoms(start, next);
             switch (step) {
                 case 0: //minute
@@ -193,7 +193,7 @@ public class CronParser {
         int next;
         AtomProto atom;
         while (start < to) {
-            next = nextChar(',', start, to);
+            next = nextIndexOf(',', start, to);
             atom = parseSingleAtom(start, next);
             if (atom != null) {
                 atoms.add(atom);
@@ -258,39 +258,39 @@ public class CronParser {
             throw createInvalidCronException("Invalid cron-expression", offset);
         }
 
-        int rangeChar = nextChar('-', offset, to);
+        int rangeChar = nextIndexOf('-', offset, to);
         if (rangeChar != to) {
-            int divChar = nextChar('/', rangeChar + 1, to);
+            int divChar = nextIndexOf('/', rangeChar + 1, to);
             if (divChar != to) {
-                return new RangeDivAtom(paserNumber(offset, rangeChar),
-                        paserNumber(rangeChar + 1, divChar),
-                        paserNumber(divChar + 1, to));
+                return new RangeDivAtom(parseNumber(offset, rangeChar),
+                        parseNumber(rangeChar + 1, divChar),
+                        parseNumber(divChar + 1, to));
             } else {
-                return new RangeAtom(paserNumber(offset, rangeChar),
-                        paserNumber(rangeChar + 1, to));
+                return new RangeAtom(parseNumber(offset, rangeChar),
+                        parseNumber(rangeChar + 1, to));
             }
         } else if (buffer[offset] == '*') {
             final int offset_1;
             if ((offset_1 = offset + 1) == to) {
                 return null; //TRUE_ATOM;
             } else if (buffer[offset_1] == '/') {
-                return new DivAtom(paserNumber(offset_1 + 1, to));
+                return new DivAtom(parseNumber(offset_1 + 1, to));
             } else {
                 throw createInvalidCronException("Invalid char '" + buffer[offset_1] + '\'', offset_1);
             }
         } else {
-            int divChar = nextChar('/', offset + 1, to);
+            int divChar = nextIndexOf('/', offset + 1, to);
             if (divChar != to) {
-                return new RangeDivAtom(paserNumber(offset, divChar),
+                return new RangeDivAtom(parseNumber(offset, divChar),
                         Integer.MAX_VALUE,
-                        paserNumber(divChar + 1, to));
+                        parseNumber(divChar + 1, to));
             } else {
-                return new ValueAtom(paserNumber(offset, to));
+                return new ValueAtom(parseNumber(offset, to));
             }
         }
     }
 
-    private int paserNumber(int offset, final int to) throws InvalidCronException {
+    private int parseNumber(int offset, final int to) throws InvalidCronException {
         if (offset >= to) {
             throw createInvalidCronException("Need a number", offset);
         }
@@ -314,7 +314,7 @@ public class CronParser {
                 .toString());
     }
 
-    private int nextChar(char c, int offset, int to) {
+    private int nextIndexOf(char c, int offset, int to) {
         final char[] buf = buffer;
         for (; offset < to; offset++) {
             if (buf[offset] == c) {
