@@ -81,7 +81,7 @@ scheduler.addTask("*", new HelloTask());
 
 ### pause & goon
 
-~~~~~
+~~~~~java
 //Pause all supportable tasks.
 scheduler.pauseAllIfSupport();
 //goon all paused tasks
