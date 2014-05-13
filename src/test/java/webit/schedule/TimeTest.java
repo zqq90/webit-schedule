@@ -2,7 +2,6 @@
 package webit.schedule;
 
 import java.util.Calendar;
-import java.util.TimeZone;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -15,9 +14,7 @@ public class TimeTest {
     @Test
     public void test() {
         long millis = System.currentTimeMillis();
-        int offset = TimeZone.getDefault().getRawOffset();
-
-        Time time = new Time(millis + offset);
+        Time time = new Time(millis);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(millis);
 
@@ -30,6 +27,6 @@ public class TimeTest {
         if (dayOfWeek == 0) {
             dayOfWeek = 7;
         }
-        assertEquals(time.dayofweek, dayOfWeek); //  1 (Monday), ... 6(SATURDAY), 7(Sunday),
+        assertEquals(time.dayOfWeek, dayOfWeek); //  1 (Monday), ... 6(SATURDAY), 7(Sunday),
     }
 }

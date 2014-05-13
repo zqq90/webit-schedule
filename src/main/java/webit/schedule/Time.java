@@ -1,6 +1,7 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule;
 
+import java.util.TimeZone;
 import webit.schedule.util.TimeUtil;
 
 /**
@@ -12,44 +13,69 @@ public final class Time {
     private static final long MILLIS_IN_DAY = 1000L * 60 * 60 * 24;
     private static final int JD_1970_integer = 2440587;
     private static final double JD_1970_fraction = 0.5;
-    public final long millis;
+    /**
+     * millisecond.
+     */
+    public final long millisecond;
     /**
      * Year.
      */
     public final int year;
     /**
-     * Month, range: [1 - 12]
+     * Month, range: [1 - 12].
      */
     public final int month;
     /**
-     * Day, range: [1 - 31]
+     * Day, range: [1 - 31].
      */
     public final int day;
     /**
-     * Hour, range: [0 - 23]
+     * Hour, range: [0 - 23].
      */
     public final int hour;
     /**
-     * Minute, range [0 - 59]
+     * Minute, range [0 - 59].
      */
     public final int minute;
     /**
-     * Day of week, range: [1-7], 1 (Monday), ... 6(SATURDAY), 7 (Sunday)
+     * Day of week, range: [1-7], 1 (Monday),, 6(SATURDAY), 7 (Sunday).
      */
-    public final int dayofweek;
+    public final int dayOfWeek;
     /**
      * Leap year flag.
      */
     public final boolean leap;
+    /**
+     * TimeZone offset.
+     */
+    public final int offset;
 
+    /**
+     * Create Time with default TimeZone offset.
+     *
+     * @param millis
+     */
     public Time(long millis) {
-        this.millis = millis;
+        this(millis, TimeZone.getDefault().getRawOffset());
+    }
 
-        final int integer = (int) (millis / MILLIS_IN_DAY) + JD_1970_integer;
-        final double fraction = (double) (millis % MILLIS_IN_DAY) / MILLIS_IN_DAY + JD_1970_fraction + 0.5;
+    /**
+     * Create Time.
+     *
+     * @param millisecond
+     * @param offset TimeZone offset
+     */
+    public Time(long millisecond, int offset) {
+        this.millisecond = millisecond;
+        this.offset = offset;
+
+        millisecond += offset; // plus offset
+
+        final int integer = (int) (millisecond / MILLIS_IN_DAY) + JD_1970_integer;
+        final double fraction = (double) (millisecond % MILLIS_IN_DAY) / MILLIS_IN_DAY + JD_1970_fraction + 0.5;
 
         //dayofweek
-        this.dayofweek = ((int) ((double) integer + fraction) % 7) +1; //  1 (Monday),... 7 (Sunday),
+        this.dayOfWeek = ((int) ((double) integer + fraction) % 7) + 1; //  1 (Monday),... 7 (Sunday),
 
         //
         int year, month, day;
@@ -105,7 +131,7 @@ public final class Time {
     }
 
     /**
-     * total days of this Month
+     * total days of this Month.
      *
      * @return int
      */
@@ -123,8 +149,8 @@ public final class Time {
      * @return boolean
      */
     public boolean isWeekend() {
-        return this.dayofweek == 7
-                || this.dayofweek == 6;
+        return this.dayOfWeek == 6
+                || this.dayOfWeek == 7;
     }
 
     /**
@@ -133,8 +159,8 @@ public final class Time {
      * @return boolean
      */
     public boolean isWeekday() {
-        return this.dayofweek != 7
-                && this.dayofweek != 6;
+        return this.dayOfWeek != 6
+                && this.dayOfWeek != 7;
     }
 
     /**
@@ -153,7 +179,7 @@ public final class Time {
      */
     public boolean isLastWeekdayOfThisMonth() {
         final int lastdays = getTotalDaysOfThisMonth() - this.day;
-        switch (this.dayofweek) {
+        switch (this.dayOfWeek) {
             case 1:
             case 2:
             case 3:
@@ -167,9 +193,9 @@ public final class Time {
     }
 
     /**
-     * For test
+     * For test.
      *
-     * @param millis
+     * @param millisecond
      * @param year
      * @param month
      * @param day
@@ -178,14 +204,15 @@ public final class Time {
      * @param dayofweek
      * @param leap
      */
-    public Time(long millis, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
-        this.millis = millis;
+    public Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
+        this.millisecond = millisecond;
         this.year = year;
         this.month = month > 0 && month <= 12 ? month : month % 12 + 1;
         this.day = day;
         this.hour = hour;
         this.minute = minute;
-        this.dayofweek = dayofweek;
+        this.dayOfWeek = dayofweek;
         this.leap = leap;
+        this.offset = 0;
     }
 }

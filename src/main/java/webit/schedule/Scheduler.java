@@ -18,7 +18,7 @@ public final class Scheduler {
 
     private final static int ONE_MINUTE = 60 * 1000;
     private final static int TTL = ONE_MINUTE;
-    
+
     //settings
     private boolean daemon = false;
     private boolean enableNotifyThread = false;
@@ -204,7 +204,7 @@ public final class Scheduler {
     }
 
     private void notifyAllExecutor(final long millis) {
-        final Time time = new Time(millis + this.timeOffset);
+        final Time time = new Time(millis, this.timeOffset);
         final TaskExecutorEntry[] entrys;
         int i = (entrys = this.getTaskExecutors()).length;
         while (i != 0) {

@@ -19,6 +19,6 @@ public final class DayOfWeekMatcher implements Matcher {
 
     @Override
     public boolean match(Time time) {
-        return atom.match(time.dayofweek);
+        return atom.match(time.dayOfWeek);
     }
 }
