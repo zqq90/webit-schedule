@@ -13,6 +13,9 @@ Mon  Tue  Wed  Thu  Fri  Sat  Sun
  20   21   22   23   24  [25] [26] 
  27   28   29   30   31            
 
+//4,5,25-26   周末
+//6-10,1,2,3  工作日
+
 {2} #February
 Mon  Tue  Wed  Thu  Fri  Sat  Sun  
                          [ 1] [ 2] 
@@ -81,11 +84,13 @@ Mon  Tue  Wed  Thu  Fri  Sat  Sun
 
 {10} #October
 Mon  Tue  Wed  Thu  Fri  Sat  Sun  
-            1    2    3  [ 4] [ 5] 
+          [ 1]   2    3  [ 4] [ 5] 
   6    7    8    9   10  [11] [12] 
  13   14   15   16   17  [18] [19] 
  20   21   22   23   24  [25] [26] 
  27   28   29   30   31            
+
+//1    国庆节
 
 {11} #November
 Mon  Tue  Wed  Thu  Fri  Sat  Sun  

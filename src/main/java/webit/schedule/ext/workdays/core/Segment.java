@@ -12,7 +12,7 @@ public class Segment {
     final char[] buffer;
     final int line;
     int pos;
-    final int end;
+    int end;
 
     public Segment(char[] buffer, int line, int pos, int end) {
         this.buffer = buffer;
@@ -50,6 +50,14 @@ public class Segment {
 
     public void checkBlanks() {
         checkBlanks(pos, end);
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
     }
 
     public int getEnd() {
@@ -116,9 +124,31 @@ public class Segment {
             return end - pos;
         }
     }
+
+    public int indexOf(char c) {
+        return indexOf(pos, end, c);
+    }
+
+    public int indexOfFrom(int from, char c) {
+        return indexOf(from, end, c);
+    }
+
+    public int indexOfTo(int to, char c) {
+        return indexOf(pos, to, c);
+    }
     
+    public int indexOf(int from, int to, char c) {
+        while (from < to) {
+            if (buffer[from] == c) {
+                return from;
+            }
+            from++;
+        }
+        return -1;
+    }
+
     public static boolean isBlank(char c) {
         return c == ' ';
-                //|| c == '\t'; Note: Not support
+        //|| c == '\t'; Note: Not support
     }
 }

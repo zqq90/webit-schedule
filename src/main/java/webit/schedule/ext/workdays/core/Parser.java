@@ -336,8 +336,73 @@ public class Parser {
     private void parseMessage(Segment segment) {
         checkFinishedCurrentMonth();
         segment.skipBlanks();
-        //TODO: 
+
+        int pos = segment.pos;
+        int end = segment.end;
+        int blankIndex = segment.indexOf(' ');
+        if (blankIndex < 0 || blankIndex + 1 >= end) {
+            return; //without message
+        }
+        String message = new String(segment.buffer, blankIndex + 1, end -blankIndex -1).trim();
+        //number list
+        while (pos < blankIndex) {
+            int nextComma = segment.indexOf(pos, blankIndex, ',');
+            if (nextComma < 0) {
+                nextComma = blankIndex;
+            }
+            parseNumberPeerForMessage(segment, pos, nextComma, message);
+            pos = nextComma + 1;
+        }
         this.state = STATE_MESSAGE;
+    }
+
+    /**
+     * Parse number peer for message. like: 1-5 or 3
+     *
+     * @param buffer
+     * @param offset
+     * @param to
+     * @param message
+     */
+    private void parseNumberPeerForMessage(final Segment segment, int form, final int to, String message) {
+        int splitIndex = segment.indexOf(form, to, '-');
+        if (splitIndex >= 0) {
+            int dayFrom = parseNumber(segment.buffer, form, splitIndex);
+            int dayTo = parseNumber(segment.buffer, splitIndex + 1, to);
+            for (int day = dayFrom; day <= dayTo; day++) {
+                setDayMessage(day, message);
+            }
+        } else {
+            int day = parseNumber(segment.buffer, form, to);
+            setDayMessage(day, message);
+        }
+    }
+
+    private void setDayMessage(int day, String message) {
+        if (day <= 0 || day > this.currentYearEntry.getMonthLength(this.currentMonth)) {
+            throw createException("Month " + this.currentMonth + " don't have such day: " + day);
+        }
+        this.currentYearEntry.setMessage(this.currentMonth, day, message);
+    }
+
+    /**
+     * Parse number form buffer.
+     */
+    private int parseNumber(final char[] buffer, int offset, final int to) {
+        if (offset >= to) {
+            throw createException("Need a number", offset);
+        }
+        int value = 0;
+        char c;
+        while (offset < to) {
+            c = buffer[offset++];
+            if (c >= '0' && c <= '9') {
+                value = value * 10 + ((int) c - (int) '0');
+            } else {
+                throw createException("Invalid numberic char '" + c + '\'', offset);
+            }
+        }
+        return value;
     }
 
     private RuntimeException createException(String message) {
@@ -357,6 +422,14 @@ public class Parser {
     }
 
     private RuntimeException createException(String message, Segment segment) {
-        return new RuntimeException(message + ", at line " + segment.line + ", column " + segment.getPrePos());
+        return createException(message, segment.line, segment.getPrePos());
+    }
+
+    private RuntimeException createException(String message, int line, int column) {
+        return new RuntimeException(message + ", at line " + line + ", column " + column + 1);
+    }
+
+    private RuntimeException createException(String message, int column) {
+        return createException(message, lineNumber, column);
     }
 }
