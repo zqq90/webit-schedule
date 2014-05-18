@@ -153,7 +153,7 @@ public class CronParser {
                     }
                     break;
                 case 5: //dayofweek
-                    atom = warpToOrAtom(atomProtos, 0, 6);
+                    atom = warpToOrAtom(atomProtos, 1, 7);
                     if (atom != null) {
                         matchers.add(new DayOfWeekMatcher(atom));
                     }

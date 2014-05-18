@@ -34,7 +34,7 @@ public final class Time {
      */
     public final int minute;
     /**
-     * Day of week, range: [0-6], 0 (Sunday), 1 (Monday), ... 6(SATURDAY)
+     * Day of week, range: [1-7], 1 (Monday), ... 6(SATURDAY), 7 (Sunday)
      */
     public final int dayofweek;
     /**
@@ -49,7 +49,7 @@ public final class Time {
         final double fraction = (double) (millis % MILLIS_IN_DAY) / MILLIS_IN_DAY + JD_1970_fraction + 0.5;
 
         //dayofweek
-        this.dayofweek = ((int) ((double) integer + fraction + 1) % 7); // 0 (Sunday), 1 (Monday),...
+        this.dayofweek = ((int) ((double) integer + fraction) % 7) +1; //  1 (Monday),... 7 (Sunday),
 
         //
         int year, month, day;
@@ -118,22 +118,22 @@ public final class Time {
     }
 
     /**
-     * if is weekend. 0 (Sunday) or 6(SATURDAY)
+     * if is weekend. 7 (Sunday) or 6(SATURDAY)
      *
      * @return boolean
      */
     public boolean isWeekend() {
-        return this.dayofweek == 0
+        return this.dayofweek == 7
                 || this.dayofweek == 6;
     }
 
     /**
-     * if is weekday. not 0 (Sunday) or 6(SATURDAY)
+     * if is weekday. not 7 (Sunday) or 6(SATURDAY)
      *
      * @return boolean
      */
     public boolean isWeekday() {
-        return this.dayofweek != 0
+        return this.dayofweek != 7
                 && this.dayofweek != 6;
     }
 
@@ -161,7 +161,7 @@ public final class Time {
                 return lastdays == 0;
             case 5:
                 return lastdays <= 2;
-            default: // 0 or 6
+            default: // 7 or 6
                 return false;
         }
     }
