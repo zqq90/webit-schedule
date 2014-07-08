@@ -22,8 +22,4 @@ public class ConfigIOException extends RuntimeException {
     public ConfigIOException(Throwable cause) {
         super(cause);
     }
-
-    public ConfigIOException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
