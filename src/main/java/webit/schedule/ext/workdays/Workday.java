@@ -6,8 +6,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import webit.schedule.Time;
-import webit.schedule.ext.workdays.core.Parser;
-import webit.schedule.ext.workdays.core.YearEntry;
 
 /**
  *

@@ -8,9 +8,6 @@ package webit.schedule.ext.workdays;
  */
 public class ConfigIOException extends RuntimeException {
 
-    public ConfigIOException() {
-    }
-
     public ConfigIOException(String message) {
         super(message);
     }

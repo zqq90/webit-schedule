@@ -16,20 +16,46 @@ import webit.schedule.util.ThreadUtil;
  */
 public final class Scheduler {
 
-    private final static int ONE_MINUTE = 60 * 1000;
-    private final static int TTL = ONE_MINUTE;
+    private final static int TTL = 60 * 1000;
+    private static int threadInitNumber = 0;
 
-    //settings
-    private boolean daemon = false;
-    private boolean enableNotifyThread = false;
-    private int timeOffset = 0;
+    private final Object lockThis = new Object();
+    private volatile boolean initialized;
+    
+    private boolean daemon;
+    private boolean enableNotifyThread;
+    private int timeOffset;
+
+    private boolean started;
+    private boolean paused;
+    private NotifyThread notifyThread;
+    private TimerThread timerThread;
+    private final ArrayList<TaskExecutorEntry> executorEntrys;
+    private TaskExecutorFactory executorFactory;
+
+    public Scheduler() {
+        this.executorEntrys = new ArrayList<TaskExecutorEntry>();
+        this.timeOffset = TimeZone.getDefault().getRawOffset();
+    }
 
     public void setDaemon(boolean daemon) {
         this.daemon = daemon;
     }
 
+    public void setTimeZone(int timeZone) {
+        timeOffset = timeZone * (60 * 60 * 1000); // timeZone * 1h
+    }
+
     public void setTimeOffset(int timeOffset) {
         this.timeOffset = timeOffset;
+    }
+
+    public int getTimeOffset() {
+        return timeOffset;
+    }
+
+    public void setEnableNotifyThread(boolean enableNotifyThread) {
+        this.enableNotifyThread = enableNotifyThread;
     }
 
     public void setExecutorFactoryClass(Class executorFactoryClass) {
@@ -38,28 +64,6 @@ public final class Scheduler {
         } catch (Exception e) {
             throw new IllegalArgumentException("Illegal class name: " + executorFactoryClass, e);
         }
-    }
-
-    public void setTimeZone(int timeZone) {
-        timeOffset = 60 * ONE_MINUTE * timeZone; // timeZone * 1h
-    }
-
-    public void setEnableNotifyThread(boolean enableNotifyThread) {
-        this.enableNotifyThread = enableNotifyThread;
-    }
-
-    private boolean started = false;
-    private volatile boolean initialized;
-
-    private NotifyThread notifyThread;
-    private TimerThread timerThread;
-    private final ArrayList<TaskExecutorEntry> executorEntrys;
-    private TaskExecutorFactory executorFactory = null;
-    private final Object lockThis = new Object();
-
-    public Scheduler() {
-        this.executorEntrys = new ArrayList<TaskExecutorEntry>();
-        this.timeOffset = TimeZone.getDefault().getRawOffset();
     }
 
     private void initialize() {
@@ -145,8 +149,6 @@ public final class Scheduler {
         }
     }
 
-    private boolean paused = false;
-
     public void pauseAllIfSupport() throws IllegalStateException {
         synchronized (lockThis) {
             if (started) {
@@ -217,6 +219,10 @@ public final class Scheduler {
         }
     }
 
+    private static synchronized String nextThreadNumString() {
+        return Integer.toString(threadInitNumber++);
+    }
+
     private final static class NotifyThread extends Thread {
 
         private final Scheduler scheduler;
@@ -229,14 +235,6 @@ public final class Scheduler {
 
         void startNotify(long millis) {
             this.millis = millis;
-//            if (this.isAlive()) {
-//                //TODO: if the pre notify not complate we should log this
-//                try {
-//                    this.interrupt();
-//                } catch (Exception e) {
-//                    //ignore
-//                }
-//            }
             this.start();
         }
 
@@ -248,17 +246,17 @@ public final class Scheduler {
 
     private final static class TimerThread extends Thread {
 
-        private static final long MISSTAKE_ALLOW = 200;
         private final Scheduler scheduler;
 
-        public TimerThread(Scheduler scheduler) {
+        TimerThread(Scheduler scheduler) {
             super("webit-scheduler-timer-".concat(nextThreadNumString()));
             this.scheduler = scheduler;
         }
 
         private static void safeSleepToMillis(long nextMinute) throws InterruptedException {
             long sleepTime;
-            while ((sleepTime = nextMinute - System.currentTimeMillis()) > MISSTAKE_ALLOW) {
+            //MISSTAKE_ALLOW = 200
+            while ((sleepTime = nextMinute - System.currentTimeMillis()) > 200) {
                 Thread.sleep(sleepTime);
             }
         }
@@ -270,10 +268,9 @@ public final class Scheduler {
             for (;;) {
                 try {
                     safeSleepToMillis(nextMinute);
-
                     this.scheduler.click(nextMinute);
-                } catch (Exception e) {
-                    // Must exit!
+                } catch (InterruptedException e) {
+                    // exit if interrupted!
                     break;
                 }
 
@@ -302,13 +299,4 @@ public final class Scheduler {
         }
     }
 
-    private static int threadInitNumber = 0;
-
-    private static synchronized String nextThreadNumString() {
-        return Integer.toString(threadInitNumber++);
-    }
-
-    public int getTimeOffset() {
-        return timeOffset;
-    }
 }

@@ -7,6 +7,9 @@ package webit.schedule.util;
  */
 public class ThreadUtil {
 
+    private ThreadUtil() {
+    }
+
     public static void interruptAndTillDies(final Thread thread) {
         if (thread != null) {
             thread.interrupt();
@@ -33,25 +36,4 @@ public class ThreadUtil {
         } catch (InterruptedException ignore) {
         }
     }
-
-//    public static void join(Thread thread) {
-//        try {
-//            thread.join();
-//        } catch (InterruptedException ignore) {
-//        }
-//    }
-//
-//    public static void join(Thread thread, long millis) {
-//        try {
-//            thread.join(millis);
-//        } catch (InterruptedException ignore) {
-//        }
-//    }
-//
-//    public static void join(Thread thread, long millis, int nanos) {
-//        try {
-//            thread.join(millis, nanos);
-//        } catch (InterruptedException ignore) {
-//        }
-//    }
 }

@@ -10,9 +10,6 @@ import webit.schedule.util.TimeUtil;
  */
 public final class Time {
 
-    private static final long MILLIS_IN_DAY = 1000L * 60 * 60 * 24;
-    private static final int JD_1970_integer = 2440587;
-    private static final double JD_1970_fraction = 0.5;
     /**
      * millisecond.
      */
@@ -60,6 +57,32 @@ public final class Time {
     }
 
     /**
+     * For test.
+     *
+     * @param millisecond
+     * @param year
+     * @param month
+     * @param day
+     * @param hour
+     * @param minute
+     * @param dayofweek
+     * @param leap
+     * @Deprecated
+     */
+    @Deprecated
+    public Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
+        this.millisecond = millisecond;
+        this.year = year;
+        this.month = month > 0 && month <= 12 ? month : month % 12 + 1;
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.dayOfWeek = dayofweek;
+        this.leap = leap;
+        this.offset = 0;
+    }
+
+    /**
      * Create Time.
      *
      * @param millisecond
@@ -71,8 +94,8 @@ public final class Time {
 
         millisecond += offset; // plus offset
 
-        final int integer = (int) (millisecond / MILLIS_IN_DAY) + JD_1970_integer;
-        final double fraction = (double) (millisecond % MILLIS_IN_DAY) / MILLIS_IN_DAY + JD_1970_fraction + 0.5;
+        final int integer = (int) (millisecond / (1000L * 60 * 60 * 24)) + 2440587;
+        final double fraction = (double) (millisecond % (1000L * 60 * 60 * 24)) / (1000L * 60 * 60 * 24) + 0.5 + 0.5;
 
         //dayofweek
         this.dayOfWeek = ((int) ((double) integer + fraction) % 7) + 1; //  1 (Monday),... 7 (Sunday),
@@ -136,11 +159,10 @@ public final class Time {
      * @return int
      */
     public int getTotalDaysOfThisMonth() {
-        if (this.month != 2 || !this.leap) {
-            return TimeUtil.getMonthLengthOfCommonYear(this.month);
-        } else {
+        if (this.month == 2 && this.leap) {
             return 29;
         }
+        return TimeUtil.getMonthLengthOfCommonYear(this.month);
     }
 
     /**
@@ -149,8 +171,7 @@ public final class Time {
      * @return boolean
      */
     public boolean isWeekend() {
-        return this.dayOfWeek == 6
-                || this.dayOfWeek == 7;
+        return this.dayOfWeek > 5;
     }
 
     /**
@@ -159,8 +180,7 @@ public final class Time {
      * @return boolean
      */
     public boolean isWeekday() {
-        return this.dayOfWeek != 6
-                && this.dayOfWeek != 7;
+        return this.dayOfWeek < 6;
     }
 
     /**
@@ -179,40 +199,17 @@ public final class Time {
      */
     public boolean isLastWeekdayOfThisMonth() {
         final int lastdays = getTotalDaysOfThisMonth() - this.day;
-        switch (this.dayOfWeek) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                return lastdays == 0;
-            case 5:
-                return lastdays <= 2;
-            default: // 7 or 6
-                return false;
+        final int off = this.dayOfWeek - 5;
+        if (off < 0) {
+            // 1-4
+            return lastdays == 0;
         }
+        if (off == 0) {
+            // 5
+            return lastdays <= 2;
+        }
+        // 6-7
+        return false;
     }
 
-    /**
-     * For test.
-     *
-     * @param millisecond
-     * @param year
-     * @param month
-     * @param day
-     * @param hour
-     * @param minute
-     * @param dayofweek
-     * @param leap
-     */
-    public Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
-        this.millisecond = millisecond;
-        this.year = year;
-        this.month = month > 0 && month <= 12 ? month : month % 12 + 1;
-        this.day = day;
-        this.hour = hour;
-        this.minute = minute;
-        this.dayOfWeek = dayofweek;
-        this.leap = leap;
-        this.offset = 0;
-    }
 }

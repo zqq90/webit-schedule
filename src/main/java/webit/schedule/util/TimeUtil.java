@@ -7,8 +7,11 @@ package webit.schedule.util;
  */
 public class TimeUtil {
 
+    private TimeUtil() {
+    }
+
     private final static int[] DAYS_OF_MONTH = new int[]{
-        0, //
+        0,
         31, // 1
         28, // 2
         31, // 3
@@ -24,11 +27,10 @@ public class TimeUtil {
     };
 
     public static int getMonthLength(final int year, final int month) {
-        if (month != 2 || !isLeapYear(year)) {
-            return DAYS_OF_MONTH[month];
-        } else {
+        if (month == 2 && isLeapYear(year)) {
             return 29;
         }
+        return DAYS_OF_MONTH[month];
     }
 
     public static int getMonthLengthOfCommonYear(final int month) {

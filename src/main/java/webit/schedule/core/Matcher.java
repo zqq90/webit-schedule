@@ -9,7 +9,7 @@ import webit.schedule.Time;
  */
 public interface Matcher {
 
-    public final static Matcher MATCH_ALL = new Matcher() {
+    final static Matcher MATCH_ALL = new Matcher() {
 
         @Override
         public boolean match(Time time) {

@@ -3,16 +3,16 @@ package webit.schedule.util;
 
 import java.util.Arrays;
 
-public class IntArrayList {
+public final class IntList {
 
     private int[] array;
     private int size;
 
-    public IntArrayList() {
+    public IntList() {
         this(10);
     }
 
-    public IntArrayList(int initialCapacity) {
+    public IntList(int initialCapacity) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Invalid capacity: " + initialCapacity);
         }
@@ -27,17 +27,16 @@ public class IntArrayList {
     }
 
     public int[] toSortedArray() {
-        final int[] result;
-        Arrays.sort(result = toArray());
+        final int[] result = toArray();
+        Arrays.sort(result);
         return result;
     }
 
     public int get(int index) {
         if (index >= 0 && index < size) {
             return array[index];
-        } else {
-            throw new IndexOutOfBoundsException();
         }
+        throw new IndexOutOfBoundsException();
     }
 
     public int size() {
@@ -45,18 +44,18 @@ public class IntArrayList {
     }
 
     protected void add(int element) {
-        ensureCapacity(size + 1);
-        array[size++] = element;
+        final int index = this.size++;
+        int[] arr = this.array;
+        if (index == arr.length) {
+            System.arraycopy(arr, 0, arr = this.array = new int[((index * 3) >> 1) + 1], 0, index);
+        }
+        arr[index] = element;
     }
 
     public void addIfAbsent(int element) {
         if (this.contains(element) == false) {
             add(element);
         }
-    }
-
-    public void clear() {
-        size = 0;
     }
 
     public boolean contains(int data) {
@@ -66,23 +65,5 @@ public class IntArrayList {
             }
         }
         return false;
-    }
-
-    public int indexOf(int data) {
-        for (int i = 0; i < size; i++) {
-            if (array[i] == data) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public void ensureCapacity(int mincap) {
-        if (mincap > array.length) {
-            int newcap = ((array.length * 3) >> 1) + 1;
-            int[] olddata = array;
-            array = new int[newcap < mincap ? mincap : newcap];
-            System.arraycopy(olddata, 0, array, 0, size);
-        }
     }
 }

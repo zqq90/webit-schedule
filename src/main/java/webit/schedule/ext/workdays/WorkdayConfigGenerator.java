@@ -46,6 +46,20 @@ public class WorkdayConfigGenerator {
         WEEK_DAYS_TMPL[len - 1] = NEW_LINE;
     }
 
+    private Writer writer;
+    private final int year;
+    private final char[] weekDaysBuffer;
+
+    /**
+     * Create with year.
+     *
+     * @param year
+     */
+    public WorkdayConfigGenerator(int year) {
+        this.year = year;
+        weekDaysBuffer = new char[WEEK_DAYS_TMPL.length];
+    }
+
     /**
      * Render to <code>Writer</code>.
      *
@@ -86,20 +100,6 @@ public class WorkdayConfigGenerator {
                 writer.close();
             }
         }
-    }
-
-    private Writer writer;
-    private final int year;
-    private final char[] weekDaysBuffer;
-
-    /**
-     * Create with year.
-     *
-     * @param year
-     */
-    public WorkdayConfigGenerator(int year) {
-        this.year = year;
-        weekDaysBuffer = new char[WEEK_DAYS_TMPL.length];
     }
 
     /**

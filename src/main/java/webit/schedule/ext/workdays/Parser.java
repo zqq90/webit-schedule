@@ -1,5 +1,5 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
-package webit.schedule.ext.workdays.core;
+package webit.schedule.ext.workdays;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +11,8 @@ import java.util.Arrays;
  *
  * @author Zqq
  */
-public class Parser {
+class Parser {
 
-    private final static int INIT_BUFFER_SIZE = 64;
-    //state s
     private final static int STATE_INIT = 1; //init
     private final static int STATE_MONTH_START = 2; //after month declare
     private final static int STATE_WEEK_HEAD = 3; //after week head declare
@@ -33,7 +31,7 @@ public class Parser {
     /**
      * Create a Parser.
      */
-    public Parser() {
+    Parser() {
         reset();
     }
 
@@ -54,12 +52,12 @@ public class Parser {
      * @return
      * @throws IOException
      */
-    public YearEntry parse(int year, Reader reader) throws IOException {
+    YearEntry parse(int year, Reader reader) throws IOException {
         final YearEntry entry = currentYearEntry = new YearEntry(year);
         try {
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line;
-            char[] buffer = new char[INIT_BUFFER_SIZE];
+            char[] buffer = new char[64];
             while ((line = bufferedReader.readLine()) != null) {
                 lineNumber++;
                 if (line.isEmpty()) {
@@ -92,7 +90,7 @@ public class Parser {
      *
      * @param segment
      */
-    protected void parseLine(final Segment segment) {
+    private void parseLine(final Segment segment) {
         final int start = segment.getNextPos();
         final int currentState = state;
         segment.skipBlanks();
@@ -175,8 +173,6 @@ public class Parser {
         if (c == '1') {
             char next = segment.next();
             switch (next) {
-//                case '\t':
-//                    throw createException("Not support tab char", segment);
                 case ' ':
                     mouth = 1;
                     segment.checkCharWithBlanks('}');
@@ -220,7 +216,7 @@ public class Parser {
         for (int i = 0; i < 7; i++) {
             segment.skipBlanks();
             weekdayIndexer[i] = segment.getNextPos();
-            segment.skipNotBlanks();
+            segment.skipUnblanks();
         }
         segment.checkBlanks();
         this.state = STATE_WEEK_HEAD;
@@ -261,7 +257,7 @@ public class Parser {
                 end = weekdayIndexer[weekday];
             }
             segment.resetPos(start);
-            //
+
             segment.skipBlanks();
             if (segment.getNextPos() >= end) {
                 throw createMissDayOfMonthDayException(month, currDay, segment);
@@ -315,7 +311,6 @@ public class Parser {
                 if (isFreeDayClosed == false) {
                     throw createException("Not support set half free day now", segment);
                 }
-                //System.out.println("FreeDay: " + month + "-" + currDay);
             } else {
                 yearEntry.setWorkday(month, currDay);
             }
@@ -343,7 +338,7 @@ public class Parser {
         if (blankIndex < 0 || blankIndex + 1 >= end) {
             return; //without message
         }
-        String message = new String(segment.buffer, blankIndex + 1, end -blankIndex -1).trim();
+        String message = new String(segment.buffer, blankIndex + 1, end - blankIndex - 1).trim();
         //number list
         while (pos < blankIndex) {
             int nextComma = segment.indexOf(pos, blankIndex, ',');

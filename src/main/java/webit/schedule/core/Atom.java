@@ -5,7 +5,7 @@ package webit.schedule.core;
  *
  * @author zqq90
  */
-public interface Atom {
+interface Atom {
 
     boolean match(int value);
 }

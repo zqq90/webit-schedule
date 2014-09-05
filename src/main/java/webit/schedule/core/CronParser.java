@@ -4,26 +4,7 @@ package webit.schedule.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import webit.schedule.core.atom.ArrayAtom;
-import webit.schedule.core.atom.DivAtom;
-import webit.schedule.core.atom.OrAtom;
-import webit.schedule.core.atom.OrAtomGroup;
-import webit.schedule.core.atom.OrThreeValueAtom;
-import webit.schedule.core.atom.OrValueAtom;
-import webit.schedule.core.atom.RangeAtom;
-import webit.schedule.core.atom.RangeDivAtom;
-import webit.schedule.core.atom.ValueAtom;
-import webit.schedule.core.matcher.AndMatcher;
-import webit.schedule.core.matcher.AndMatcherGroup;
-import webit.schedule.core.matcher.DayOfMonthMatcher;
-import webit.schedule.core.matcher.DayOfWeekMatcher;
-import webit.schedule.core.matcher.HourMatcher;
-import webit.schedule.core.matcher.MinuteMatcher;
-import webit.schedule.core.matcher.MonthMatcher;
-import webit.schedule.core.matcher.OrMatcher;
-import webit.schedule.core.matcher.OrMatcherGroup;
-import webit.schedule.core.matcher.YearMatcher;
-import webit.schedule.util.IntArrayList;
+import webit.schedule.util.IntList;
 
 /**
  * Cron Parser
@@ -32,7 +13,15 @@ import webit.schedule.util.IntArrayList;
  */
 public class CronParser {
 
-    private final static char[] EMPTY_CHAR_ARRAY = new char[0];
+    private final char[] buffer;
+
+    CronParser(final char[] cron) {
+        this.buffer = cron != null ? cron : new char[0];
+    }
+
+    CronParser(final String cron) {
+        this.buffer = cron != null ? cron.toCharArray() : new char[0];
+    }
 
     /**
      * Parse cron string.
@@ -45,14 +34,15 @@ public class CronParser {
         return new CronParser(cron).parse();
     }
 
-    private final char[] buffer;
-
-    public CronParser(final char[] cron) {
-        this.buffer = cron != null ? cron : EMPTY_CHAR_ARRAY;
-    }
-
-    public CronParser(final String cron) {
-        this.buffer = cron != null ? cron.toCharArray() : EMPTY_CHAR_ARRAY;
+    /**
+     * Parse cron char array.
+     *
+     * @param cron
+     * @return Matcher
+     * @throws InvalidCronException
+     */
+    public static Matcher parse(final char[] cron) throws InvalidCronException {
+        return new CronParser(cron).parse();
     }
 
     /**
@@ -212,7 +202,7 @@ public class CronParser {
             return null;
         } else {
             final List<Atom> atoms = new ArrayList<Atom>(protoSize);
-            final IntArrayList list = new IntArrayList();
+            final IntList list = new IntList();
             AtomProto atomProto;
 
             for (Iterator<AtomProto> it = atomProtos.iterator(); it.hasNext();) {
