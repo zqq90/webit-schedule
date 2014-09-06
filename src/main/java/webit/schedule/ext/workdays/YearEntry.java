@@ -1,7 +1,6 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule.ext.workdays;
 
-import webit.schedule.Time;
 import webit.schedule.util.TimeUtil;
 
 /**
@@ -48,16 +47,8 @@ class YearEntry {
         return this.datas[getIndexOfDate(month, day)];
     }
 
-    boolean isWorkday(Time time) {
-        return isWorkday(time.month, time.day);
-    }
-
     String getMessage(int month, int day) {
         return this.messages[getIndexOfDate(month, day)];
-    }
-
-    String getMessage(Time time) {
-        return getMessage(time.month, time.day);
     }
 
     void setWorkday(int month, int day, boolean workday) {
