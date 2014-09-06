@@ -6,7 +6,6 @@ import webit.schedule.Scheduler;
 import webit.schedule.Task;
 import webit.schedule.TaskContext;
 import webit.schedule.TaskExecutor;
-import webit.schedule.TaskExecutorStatus;
 import webit.schedule.Time;
 import webit.schedule.util.ThreadUtil;
 
@@ -132,14 +131,14 @@ public class DefaultTaskExecutor implements TaskExecutor {
     }
 
     @Override
-    public TaskExecutorStatus getState() {
+    public int getState() {
         if (requestedStop) {
-            return running ? TaskExecutorStatus.STOPPING : TaskExecutorStatus.STOPPED;
-        } else if (requestedPause) {
-            return running ? TaskExecutorStatus.PAUSING : TaskExecutorStatus.PAUSED;
-        } else {
-            return running ? TaskExecutorStatus.RUNNING : TaskExecutorStatus.HOLDDING;
+            return running ? STATE_STOPPING : STATE_STOPPED;
         }
+        if (requestedPause) {
+            return running ? STATE_PAUSING : STATE_PAUSED;
+        }
+        return running ? STATE_RUNNING : STATE_HOLDING;
     }
 
     protected static class DefaultTaskContext implements TaskContext {
