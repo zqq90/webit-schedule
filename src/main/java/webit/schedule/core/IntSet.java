@@ -1,18 +1,18 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
-package webit.schedule.util;
+package webit.schedule.core;
 
 import java.util.Arrays;
 
-public final class IntList {
+final class IntSet {
 
     private int[] array;
     private int size;
 
-    public IntList() {
+    IntSet() {
         this(10);
     }
 
-    public IntList(int initialCapacity) {
+    IntSet(int initialCapacity) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Invalid capacity: " + initialCapacity);
         }
@@ -20,30 +20,28 @@ public final class IntList {
         size = 0;
     }
 
-    public int[] toArray() {
-        final int[] result;
-        System.arraycopy(array, 0, result = new int[size], 0, size);
-        return result;
-    }
-
-    public int[] toSortedArray() {
-        final int[] result = toArray();
+    int[] toSortedArray() {
+        final int[] result = new int[size];
+        System.arraycopy(array, 0, result, 0, size);
         Arrays.sort(result);
         return result;
     }
 
-    public int get(int index) {
+    int get(int index) {
         if (index >= 0 && index < size) {
             return array[index];
         }
         throw new IndexOutOfBoundsException();
     }
 
-    public int size() {
+    int size() {
         return size;
     }
 
-    protected void add(int element) {
+    void add(int element) {
+        if (this.contains(element)) {
+            return;
+        }
         final int index = this.size++;
         int[] arr = this.array;
         if (index == arr.length) {
@@ -52,13 +50,7 @@ public final class IntList {
         arr[index] = element;
     }
 
-    public void addIfAbsent(int element) {
-        if (this.contains(element) == false) {
-            add(element);
-        }
-    }
-
-    public boolean contains(int data) {
+    boolean contains(int data) {
         for (int i = 0, len = size; i < len; i++) {
             if (array[i] == data) {
                 return true;

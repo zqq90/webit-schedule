@@ -1,8 +1,6 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule.core;
 
-import webit.schedule.util.IntList;
-
 /**
  *
  * @author zqq90
@@ -39,7 +37,7 @@ class RangeDivAtom implements Atom, AtomProto {
     }
 
     @Override
-    public void render(final IntList list, int min, int max) {
+    public void render(final IntSet list, int min, int max) {
         if (min < this.min) {
             min = this.min;
         }
@@ -51,7 +49,7 @@ class RangeDivAtom implements Atom, AtomProto {
             step += div;
         }
         while (step <= max) {
-            list.addIfAbsent(step);
+            list.add(step);
             step += div;
         }
     }

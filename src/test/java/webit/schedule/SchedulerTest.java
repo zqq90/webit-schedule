@@ -2,7 +2,6 @@
 package webit.schedule;
 
 import org.junit.Test;
-import webit.schedule.util.ThreadUtil;
 
 /**
  *
@@ -100,7 +99,7 @@ public class SchedulerTest {
             public void execute(TaskContext context) {
 
                 println(" start", context.getTime());
-                ThreadUtil.sleep(90 * 1000);
+                sleep(90 * 1000);
                 println(" end", context.getTime());
             }
 
@@ -167,6 +166,13 @@ public class SchedulerTest {
 
     public static void startScheduler(Scheduler scheduler) {
         scheduler.start();
-        ThreadUtil.sleep(ONE_HOUR);
+        sleep(ONE_HOUR);
+    }
+
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignore) {
+        }
     }
 }

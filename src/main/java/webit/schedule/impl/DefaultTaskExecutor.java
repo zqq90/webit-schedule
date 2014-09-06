@@ -132,7 +132,7 @@ public class DefaultTaskExecutor implements TaskExecutor {
     }
 
     @Override
-    public TaskExecutorStatus getStatus() {
+    public TaskExecutorStatus getState() {
         if (requestedStop) {
             return running ? TaskExecutorStatus.STOPPING : TaskExecutorStatus.STOPPED;
         } else if (requestedPause) {

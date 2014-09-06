@@ -16,21 +16,20 @@ import webit.schedule.util.ThreadUtil;
  */
 public final class Scheduler {
 
-    private final static int TTL = 60 * 1000;
+    private static final int TTL = 60 * 1000;
     private static int threadInitNumber = 0;
 
-    private final Object lockThis = new Object();
-    private volatile boolean initialized;
-    
     private boolean daemon;
     private boolean enableNotifyThread;
     private int timeOffset;
 
+    private final Object lock = new Object();
+    private final ArrayList<TaskExecutorEntry> executorEntrys;
+    private volatile boolean initialized;
     private boolean started;
     private boolean paused;
     private NotifyThread notifyThread;
     private TimerThread timerThread;
-    private final ArrayList<TaskExecutorEntry> executorEntrys;
     private TaskExecutorFactory executorFactory;
 
     public Scheduler() {
@@ -58,23 +57,28 @@ public final class Scheduler {
         this.enableNotifyThread = enableNotifyThread;
     }
 
-    public void setExecutorFactoryClass(Class executorFactoryClass) {
+    public void setExecutorFactory(TaskExecutorFactory executorFactory) {
+        this.executorFactory = executorFactory;
+    }
+
+    public void setExecutorFactory(Class executorFactory) {
         try {
-            executorFactory = (TaskExecutorFactory) executorFactoryClass.newInstance();
+            this.executorFactory = (TaskExecutorFactory) executorFactory.newInstance();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal class name: " + executorFactoryClass, e);
+            throw new IllegalArgumentException("Illegal class name: " + executorFactory, e);
         }
     }
 
     private void initialize() {
-        if (initialized == false) {
-            synchronized (lockThis) {
-                if (initialized == false) {
-                    if (this.executorFactory == null) {
-                        executorFactory = new DefaultTaskExecutorFactory();
-                    }
-                    initialized = true;
+        if (initialized) {
+            return;
+        }
+        synchronized (lock) {
+            if (initialized == false) {
+                if (this.executorFactory == null) {
+                    executorFactory = new DefaultTaskExecutorFactory();
                 }
+                initialized = true;
             }
         }
     }
@@ -116,7 +120,7 @@ public final class Scheduler {
 
     public void start() throws IllegalStateException, IllegalArgumentException {
         initialize();
-        synchronized (lockThis) {
+        synchronized (lock) {
             if (started) {
                 throw new IllegalStateException("Scheduler already started");
             }
@@ -127,13 +131,13 @@ public final class Scheduler {
     }
 
     public void stop() throws IllegalStateException {
-        synchronized (lockThis) {
+        synchronized (lock) {
             if (started) {
                 // Interrupts the timer and waits for its death.
                 ThreadUtil.interruptAndTillDies(this.timerThread);
                 ThreadUtil.interruptAndTillDies(this.notifyThread);
-                final TaskExecutorEntry[] entrys;
-                int i = (entrys = this.getTaskExecutors()).length;
+                final TaskExecutorEntry[] entrys = getTaskExecutors();
+                int i = entrys.length;
                 while (i != 0) {
                     entrys[--i].executor.askforStop();
                 }
@@ -150,14 +154,14 @@ public final class Scheduler {
     }
 
     public void pauseAllIfSupport() throws IllegalStateException {
-        synchronized (lockThis) {
+        synchronized (lock) {
             if (started) {
                 if (paused == false) {
                     // Interrupts the timer and waits for its death.
                     ThreadUtil.interruptAndTillDies(this.timerThread);
                     ThreadUtil.interruptAndTillDies(this.notifyThread);
-                    final TaskExecutorEntry[] entrys;
-                    int i = (entrys = this.getTaskExecutors()).length;
+                    final TaskExecutorEntry[] entrys = getTaskExecutors();
+                    int i = entrys.length;
                     while (i != 0) {
                         entrys[--i].executor.askforStop();
                     }
@@ -175,12 +179,12 @@ public final class Scheduler {
     }
 
     public void goonAllIfPaused() throws IllegalStateException {
-        synchronized (lockThis) {
+        synchronized (lock) {
             if (started) {
                 if (paused) {
                     // Interrupts the timer and waits for its death.
-                    final TaskExecutorEntry[] entrys;
-                    int i = (entrys = this.getTaskExecutors()).length;
+                    final TaskExecutorEntry[] entrys = getTaskExecutors();
+                    int i = entrys.length;
                     while (i != 0) {
                         entrys[--i].executor.goonIfPaused();
                     }
@@ -195,10 +199,9 @@ public final class Scheduler {
 
     private void click(final long millis) {
         if (this.enableNotifyThread) {
-            final NotifyThread myNotifyThread;
-            //XXX: if ((myNotifyThread = this.notifyThread) != null) ??
-            this.notifyThread = myNotifyThread
-                    = new NotifyThread(this, "webit-scheduler-notify-".concat(nextThreadNumString()));
+            final NotifyThread myNotifyThread = new NotifyThread(this, "webit-scheduler-notify-".concat(nextThreadNumString()));
+            //XXX: if this.notifyThread != null ??
+            this.notifyThread = myNotifyThread;
             myNotifyThread.startNotify(millis);
         } else {
             this.notifyAllExecutor(millis);
@@ -206,14 +209,13 @@ public final class Scheduler {
     }
 
     private void notifyAllExecutor(final long millis) {
+        final TaskExecutorEntry[] entrys = getTaskExecutors();
         final Time time = new Time(millis, this.timeOffset);
-        final TaskExecutorEntry[] entrys;
-        int i = (entrys = this.getTaskExecutors()).length;
+        int i = entrys.length;
         while (i != 0) {
             try {
                 entrys[--i].notify(time);
             } catch (Exception e) {
-                //Exceptions when notify
                 //TODO: we should log this
             }
         }

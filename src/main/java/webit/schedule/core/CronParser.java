@@ -4,7 +4,6 @@ package webit.schedule.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import webit.schedule.util.IntList;
 
 /**
  * Cron Parser
@@ -202,7 +201,7 @@ public class CronParser {
             return null;
         } else {
             final List<Atom> atoms = new ArrayList<Atom>(protoSize);
-            final IntList list = new IntList();
+            final IntSet list = new IntSet();
             AtomProto atomProto;
 
             for (Iterator<AtomProto> it = atomProtos.iterator(); it.hasNext();) {

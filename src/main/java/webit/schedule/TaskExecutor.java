@@ -21,5 +21,5 @@ public interface TaskExecutor {
 
     Scheduler getScheduler();
 
-    TaskExecutorStatus getStatus();
+    TaskExecutorStatus getState();
 }

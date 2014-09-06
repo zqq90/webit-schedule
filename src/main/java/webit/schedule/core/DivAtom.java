@@ -1,8 +1,6 @@
 // Copyright (c) 2013, Webit Team. All Rights Reserved.
 package webit.schedule.core;
 
-import webit.schedule.util.IntList;
-
 /**
  *
  * @author zqq90
@@ -26,13 +24,13 @@ class DivAtom implements Atom, AtomProto {
     }
 
     @Override
-    public void render(IntList list, int min, int max) {
+    public void render(IntSet list, int min, int max) {
         int step = min / div * div;
         if (step < min) {
             step += div;
         }
         while (step <= max) {
-            list.addIfAbsent(step);
+            list.add(step);
             step += div;
         }
     }
