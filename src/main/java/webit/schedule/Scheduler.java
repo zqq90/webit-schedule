@@ -25,7 +25,7 @@ public final class Scheduler {
 
     private final Object lock = new Object();
     private final ArrayList<TaskExecutorEntry> executorEntrys;
-    private volatile boolean initialized;
+    private boolean initialized;
     private boolean started;
     private boolean paused;
     private NotifyThread notifyThread;

@@ -20,11 +20,11 @@ public class DefaultTaskExecutor implements TaskExecutor {
     protected final Scheduler scheduler;
     protected final DefaultTaskContext taskContext;
     protected final String threadNamePrefix;
-    protected boolean requestedStop;
-    protected boolean requestedPause;
-    protected boolean running;
+    protected volatile boolean requestedStop;
+    protected volatile boolean requestedPause;
+    protected volatile boolean running;
+    protected volatile Time time;
     protected Thread executeThread;
-    protected Time time;
 
     protected int threadCount;
 
