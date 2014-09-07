@@ -94,7 +94,7 @@ class Parser {
         final int start = segment.getNextPos();
         final int currentState = state;
         segment.skipBlanks();
-        if (segment.hasNext() == false) {
+        if (!segment.hasNext()) {
             //skip blank lines
             return;
         }
@@ -141,7 +141,7 @@ class Parser {
         }
         final boolean[] flag = this.monthFlag;
         for (int i = 1; i < 13; i++) {
-            if (flag[i] == false) {
+            if (!flag[i]) {
                 throw createException("Not found configs for month: " + i);
             }
         }
@@ -308,7 +308,7 @@ class Parser {
                 isFreeDayClosed = false;
             }
             if (isFreeDay) {
-                if (isFreeDayClosed == false) {
+                if (!isFreeDayClosed) {
                     throw createException("Not support set half free day now", segment);
                 }
             } else {

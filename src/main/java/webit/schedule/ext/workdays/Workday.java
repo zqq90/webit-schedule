@@ -13,8 +13,8 @@ import webit.schedule.Time;
  */
 public class Workday {
 
-    protected final WorkdayLoader loader;
-    protected final Map<Integer, YearEntry> yearEntryCache;
+    private final WorkdayLoader loader;
+    private final Map<Integer, YearEntry> yearEntryCache;
 
     public Workday(WorkdayLoader loader) {
         this.loader = loader;
@@ -40,7 +40,7 @@ public class Workday {
      * @return
      */
     public boolean isWorkday(Time time) {
-        return getYearEntry(time.year).isWorkday(time);
+        return isWorkday(time.year, time.month, time.day);
     }
 
     /**
@@ -62,7 +62,7 @@ public class Workday {
      * @return
      */
     public String getMessage(Time time) {
-        return getYearEntry(time.year).getMessage(time);
+        return getMessage(time.year, time.month, time.day);
     }
 
     /**
@@ -72,12 +72,12 @@ public class Workday {
      * @return
      * @throws ConfigIOException
      */
-    protected YearEntry getYearEntry(int year) throws ConfigIOException {
+    private YearEntry getYearEntry(int year) throws ConfigIOException {
         YearEntry yearEntry = this.yearEntryCache.get(year);
-        if (yearEntry == null) {
-            yearEntry = loadYearEntryIfAbsent(year);
+        if (yearEntry != null) {
+            return yearEntry;
         }
-        return yearEntry;
+        return loadYearEntryIfAbsent(year);
     }
 
     /**
@@ -87,7 +87,7 @@ public class Workday {
      * @return
      * @throws ConfigIOException
      */
-    protected YearEntry loadYearEntryIfAbsent(int year) throws ConfigIOException {
+    private YearEntry loadYearEntryIfAbsent(int year) throws ConfigIOException {
         synchronized (this.yearEntryCache) {
             YearEntry yearEntry = this.yearEntryCache.get(year);
             if (yearEntry == null) {

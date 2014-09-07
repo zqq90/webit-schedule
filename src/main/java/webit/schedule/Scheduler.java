@@ -74,7 +74,7 @@ public final class Scheduler {
             return;
         }
         synchronized (lock) {
-            if (initialized == false) {
+            if (!initialized) {
                 if (this.executorFactory == null) {
                     executorFactory = new DefaultTaskExecutorFactory();
                 }
@@ -156,7 +156,7 @@ public final class Scheduler {
     public void pauseAllIfSupport() throws IllegalStateException {
         synchronized (lock) {
             if (started) {
-                if (paused == false) {
+                if (!paused) {
                     // Interrupts the timer and waits for its death.
                     ThreadUtil.interruptAndTillDies(this.timerThread);
                     ThreadUtil.interruptAndTillDies(this.notifyThread);

@@ -20,13 +20,13 @@ public class DefaultTaskExecutor implements TaskExecutor {
     protected final Scheduler scheduler;
     protected final DefaultTaskContext taskContext;
     protected final String threadNamePrefix;
-    protected boolean requestedStop = false;
-    protected boolean requestedPause = false;
-    protected boolean running = false;
+    protected boolean requestedStop;
+    protected boolean requestedPause;
+    protected boolean running;
     protected Thread executeThread;
     protected Time time;
 
-    protected int threadCount = 1;
+    protected int threadCount;
 
     public DefaultTaskExecutor(Task task, Scheduler scheduler) {
         this.task = task;
@@ -70,7 +70,7 @@ public class DefaultTaskExecutor implements TaskExecutor {
     @Override
     public void stopAndWait() {
         synchronized (lockThis) {
-            if (this.requestedStop == false) {
+            if (!this.requestedStop) {
                 askforStop();
             }
             if (running) {
